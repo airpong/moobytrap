@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block container %}
+<br><br><br>
+<form method="POST">
+    {% csrf_token %}
+    {% bootstrap_form comment_form %}
+    <input type="submit" value="submit">
+</form>
+
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<div id="app">
+    
+
+    {% if follow == 'followers' %}
+        <h1>Followers</h1>
+        {% for user in person.from_user.all %}
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal-{{user.id}}" @click="filt('{{user.username}}')">
+            {{ user.username }}
+        </button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal-{{user.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">{{ user.username }}님과의 채팅</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+<ul>
+                            <li v-for="message in target_message">[[message.from_name]] : [[message.content]]</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <input v-model="msg" type="text" name=""/>
+                        <button  class="btn btn-outline-secondary" @click="createmessage({{request.user.id}},{{user.id}},'{{request.user.username}}','{{user.username}}')">전송</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <h1>Followings</h1>
+        {% for user in person.to_user.all %}
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal-{{user.id}}" @click="filt('{{user.username}}')">
+            {{ user.username }}
+        </button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal-{{user.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">{{ user.username }}님과의 채팅</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul>
+                            <li v-for="message in target_message">[[message.from_name]] : [[message.content]]</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <input v-model="msg" type="text" name=""/>
+                        <button  class="btn btn-outline-secondary" @click="createmessage({{request.user.id}},{{user.id}},'{{request.user.username}}','{{user.username}}')">전송</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+         
+{% endblock %}
+
+    {% block script %}
+    <script>
+    const app = new Vue({
+      delimiters: ['[[', ']]'],
+      el: '#app',
+      data: {
+        msg:'',
+        message_set:[],
+        target_message:[],
+      },
+      methods:{
+        thisandthat : function(id1,id2){
+            this.createmessage(id1,id2)
+            this.filt(id2)
+        },
+		createmessage : function(id1,id2,name1,name2){
+		    console.log("ㅎㅇ")
+		    console.log(this.msg)
+            axios.defaults.xsrfHeaderName = "X-CSRFToken";
+            axios.defaults.xsrfCookieName = "csrftoken";
+            axios.post(`/accounts/createmessage/${id1}/${id2}/`,{content:this.msg,from_name:name1,to_name:name2})
+                .then((response)=>{
+                    return response.data
+                })
+                .then((comment)=>{
+                    this.target_message.push(comment)
+                    this.msg = ''
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
+            },
+        getmessage : function(){
+             axios.get('/accounts/messageget/')
+                .then((response)=>{
+                    return response.data
+                })
+                .then((messages)=>{
+                    this.message_set = messages
+                    console.log(this.message_set)
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
+        },
+        filt : function(nm){
+            console.log("abc")
+            this.target_message = this.message_set.filter((message)=>{
+                console.log(message['from_name'])
+                console.log(message['to_name'])
+                return (message['from_name']===nm || message['to_name']===nm)
+            })
+            console.log("result")
+            console.log(this.target_message)
+        }
+      },
+      mounted: function(){
+            this.getmessage()
+            }
+    })
+    
+</script>
+    {% endblock %}

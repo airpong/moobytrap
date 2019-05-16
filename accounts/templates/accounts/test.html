@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+    
+    <input v-model="msg" type="text" name=""/>
+    <input type="submit" value="Submit" @click="createmessage(1,2)"/>
+
+    <ul>
+        <li v-for="message in message_set">[[message]]</li>
+    </ul>
+    </div>
+    <script>
+        const app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            msg : '',
+            message_set : []
+        },
+        methods:{
+            createmessage : function(id1,id2){
+                axios.defaults.xsrfHeaderName = "X-CSRFToken";
+                axios.defaults.xsrfCookieName = "csrftoken";
+                console.log(this.msg)
+                axios.post(`/accounts/createmessage/${id1}/${id2}/`,{content:this.msg})
+                    .then((response)=>{
+                        return response.data
+                    })
+                    .then((comment)=>{
+                        this.message_set.push(comment)
+                        this.msg = ''
+                    })
+                    .catch((error)=>{
+                        console.log(error)
+                    })
+            }
+        },
+        })
+    </script>
+</body>
+</html>

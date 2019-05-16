@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block container %}
+{% for user in users %}
+<br><br><br>
+    <a href="">{{user.username}}</a>
+{% endfor %}
+{% endblock %}

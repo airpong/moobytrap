@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block container %}
+<br><br><br>
+<div class='container'>
+    <div class='row'>
+        {% for movie in movies %}
+        <a href="{% url 'movies:makeMovie' movie.id %}">
+            <img class='mx-1' src="{{movie.image}}" style="width:auto;height:300px;"></img>
+            <p class='text-truncate text-dark' style="max-width: 200px;">{{movie.title}}</p>    
+        </a>
+        
+        
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

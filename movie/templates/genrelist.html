@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block container %}
+<br><br><br>
+<div class='container'>
+    <div class='row'>
+    {% for genre in genres %}
+            <p class='mx-5' style='font-size:50px'>
+                <a href="{% url 'genre:genremovie' genre.id %}" class='text-dark'>
+                {{genre.name}}
+                </a>
+            </p>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

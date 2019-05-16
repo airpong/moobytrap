@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block head %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+
+{% endblock %}
+{% block container %}
+<transition name="ade">
+      <div v-show="wantsee" style="background-color:black;height:400px;" class="animated slideInDown">
+        <div class="container">
+          
+        
+          <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <div class="d-flex justify-content-center">
+        
+        {% for m1 in movie1 %}
+        <div class="card" style="display:inline;height:400px;background-color:black;">
+  <img src="{{m1.image}}" class="card-img-top" alt="..." style="height:70%;">
+  <div class="card-body">
+    <a href="{% url 'movies:moviedetail' m1.id %}">
+    <p class="card-title text-truncate text-white">{{m1.title}}</p>
+    <p class="card-text text-white"><i class="fas fa-star" style="color: #ff6b6b;"></i> : {{m1.tmdbrating}}</p>
+    </a>
+  </div>
+</div>
+
+{% endfor %}
+        
+      </div>
+      
+  
+    </div>
+    <div class="carousel-item">
+      <div class="d-flex justify-content-center">
+        {% for m2 in movie2 %}
+        <div class="card" style="display:inline;height:400px;background-color:black;">
+  <img src="{{m2.image}}" class="card-img-top" alt="..." style="height:70%;">
+  <div class="card-body">
+    <a href="{% url 'movies:moviedetail' m2.id %}">
+    <p class="card-title text-truncate text-white">{{m2.title}}</p>
+    <p class="card-text text-white"><i class="fas fa-star" style="color: #ff6b6b;"></i> : {{m2.tmdbrating}}</p>
+    </a>
+  </div>
+</div>
+
+{% endfor %}
+        
+      </div>
+      
+  
+    </div>
+  </div>
+
+</div>
+</div>
+      </div>
+    </transition>
+<div id="app">
+    
+
+<div class="container">
+    <div class="card bg-dark" style="">
+  <div class="card-header text-white" style="border-color:white;">
+    <span @click="whatTab(1)">우수회원의 영화추천&nbsp; |</span>   <span @click="whatTab(2)">&nbsp;&nbsp; 맞춤 장르 영화 추천</span>
+  </div>
+  <div class="card-body" v-show="whattab == 1">
+    <blockquote class="blockquote mb-0">
+      <div class="tabs is-centered">
+  <ul style="">
+        {% for user in userrecommend %}
+            <li v-bind:class="[whatitem == {{user.id}} ? 'is-active' : '']" @click="whatItem({{user.id}})"><a class="text-white">{{user.username}}</a></li>
+        {% endfor %}   
+</ul>
+    </div>
+        {% for user,movies in userrecommend.items %}
+    <div v-show="whatitem == {{user.id}}">
+    <div class="row d-flex justify-content-center">
+        
+    
+ {% for movie in movies %}
+ <a href="{% url 'movies:moviedetail' movie.id %}">
+
+    <div class="card col-md-3 mx-2 bg-dark animated zoomIn" style="width:240px;border-color:white;">
+  <img src="{{movie.image}}" class="card-img-top" alt="..." style="width:100%;">
+  <hr>
+  <div class="card-body">
+    <p class="card-title h4 text-white text-truncate">{{movie.title}}</p>
+    <p class="card-text text-white"><i class="fas fa-star" style="color: #ff6b6b;"></i>   {{movie.tmdbrating}}</p>
+  </div>
+</div> 
+ </a>
+ 
+ {% endfor %}
+    </div>    
+        </div>
+    {% endfor %}
+    </blockquote>
+  </div>
+  <!--분기점-->
+  <div class="card-body" v-show="whattab == 2">
+    <blockquote class="blockquote mb-0">
+      <div class="tabs is-centered">
+    <ul style="">
+        <li class='is-active'><a class="text-white">{{genre}}</a></li>
+    </ul>
+    </div>
+    <div class="row d-flex justify-content-center">
+        
+    
+ <a href="{% url 'movies:moviedetail' genrerecommnd1.id %}">
+    <div class="card col-md-3 mx-2 bg-dark animated zoomIn" style="width:240px;border-color:white;">
+  <img src="{{genrerecommnd1.image}}" class="card-img-top" alt="..." style="width:100%;">
+  <hr>
+  <div class="card-body">
+    <p class="card-title h4 text-white text-truncate">{{genrerecommnd1.title}}</p>
+    <p class="card-text text-white"><i class="fas fa-star" style="color: #ff6b6b;"></i>   {{genrerecommnd1.tmdbrating}}</p>
+  </div>
+</div> 
+ </a>
+ 
+  <a href="{% url 'movies:moviedetail' genrerecommnd2.id %}">
+    <div class="card col-md-3 mx-2 bg-dark animated zoomIn" style="width:240px;border-color:white;">
+  <img src="{{genrerecommnd2.image}}" class="card-img-top" alt="..." style="width:100%;">
+  <hr>
+  <div class="card-body">
+    <p class="card-title h4 text-white text-truncate">{{genrerecommnd2.title}}</p>
+    <p class="card-text text-white"><i class="fas fa-star" style="color: #ff6b6b;"></i>   {{genrerecommnd2.tmdbrating}}</p>
+  </div>
+</div> 
+ </a>
+ 
+  <a href="{% url 'movies:moviedetail' genrerecommnd3.id %}">
+    <div class="card col-md-3 mx-2 bg-dark animated zoomIn" style="width:240px;border-color:white;">
+  <img src="{{genrerecommnd3.image}}" class="card-img-top" alt="..." style="width:100%;">
+  <hr>
+  <div class="card-body">
+    <p class="card-title h4 text-white text-truncate">{{genrerecommnd3.title}}</p>
+    <p class="card-text text-white"><i class="fas fa-star" style="color: #ff6b6b;"></i>   {{genrerecommnd3.tmdbrating}}</p>
+  </div>
+</div> 
+ </a>
+ 
+    </div>    
+        </div>
+    </blockquote>
+  </div>
+  <!--분기점끝-->
+  
+</div>
+<!--캐러샐 시작-->
+
+<!--캐러샐 끝-->
+
+
+</div>
+
+<script>
+    var nav = document.querySelector('ul.navbar-nav')
+    console.log(nav)
+    nav.innerHTML+="<li class='nav-item'><a class='nav-link' v-on:click='change()'>영화순위 보기</a></li>"
+</script>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    
+    const app = new Vue({
+      delimiters: ['[[', ']]'],
+      el: '#app',
+      data: {
+        wantsee:false,
+        activemovie:[],
+        whatitem:0,
+        whattab:1,
+        newComment: '',
+		    newScore: 0,
+		    
+      },
+      methods:{
+        change : function(){
+          this.wantsee = !this.wantsee
+        },
+        mouseover : function(movie){
+          console.log(movie)
+          console.log(this.activemovie)
+          if (this.activemovie.indexOf(movie) >= 0){
+            const idx = this.activemovie.indexOf(movie)
+            this.activemovie.splice(idx, 1)
+          }
+          else{
+            this.activemovie.push(movie)
+          }
+        },
+        whatItem : function(num){
+          this.whatitem = num
+        },
+        whatTab : function(num){
+          console.log(num)
+          this.whattab = num
+        },
+        addComment: function (movie_id) {
+          axios.defaults.xsrfHeaderName = "X-CSRFToken";
+          axios.defaults.xsrfCookieName = "csrftoken";
+    			axios.post(`/movie/${movie_id}/scores/`, { content: this.newComment, score: this.newScore })
+    				.then((response) => {
+    				  console.log('a')
+    					return response.data
+    				})
+    				.then(() => {
+    					this.newComment = ''
+    					this.newScore = 0
+    				})
+    				.catch((error) => {
+    					console.log(error)
+    				})
+    		},
+    		createmessage : function(id1,id2){
+                axios.defaults.xsrfHeaderName = "X-CSRFToken";
+                axios.defaults.xsrfCookieName = "csrftoken";
+                console.log(this.msg)
+                axios.post(`/accounts/createmessage/${id1}/${id2}/`,{content:this.msg})
+                    .then((response)=>{
+                        return response.data
+                    })
+                    .then((comment)=>{
+                        this.message_set.push(comment)
+                        this.msg = ''
+                    })
+                    .catch((error)=>{
+                        console.log(error)
+                    })
+            },
+      },
+    })
+    
+</script>
+{% endblock %}

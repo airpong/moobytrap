@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<br><br><br>
+<div class='container pb-5'>
+  <div class='row' style='height:200px;'>
+    <div class='column col-4'>
+      {% if person.profile.image %}
+        <div class='row d-flex justify-content-center'><img src="{{ person.profile.image.url }}" alt="{{ person.profile.img }}" style="max-height:200px; width:auto;"></div>
+      {% else %}
+        <div class='row d-flex justify-content-center'><i class="far fa-user fa-10x"></i></div>
+      {% endif %}
+    </div>
+    <div class='column col-8'>
+      <h1>{{ person.username }} <i class="fas fa-dollar-sign" style="color: #ff922b;"></i>{{person.grade}}</h1>
+      {% if user.is_authenticated %}
+      {% if user != person %}
+          {% if user in person.from_user.all %}
+          <a href="{% url 'accounts:follow' person.id %}"><button type="button" class="btn btn-light btn-sm">Following</button></a>
+          {% else %}
+          <a href="{% url 'accounts:follow' person.id %}"><button type="button" class="btn btn-info btn-sm">Follow</button></a>
+          {% endif %}
+      {% else %}
+          <a href="{% url 'accounts:update' %}">계정 정보 수정</a>
+          {% if user.profile %}
+          <a href="{% url 'accounts:profile_update' %}">프로필 정보 수정</a>
+          {% else %}
+          <a href="{% url 'accounts:profile_create' %}">프로필 생성</a>
+          {% endif %}
+      {% endif %}
+      {% endif %}
+      <p>Follow : <a href="{% url 'accounts:followers' person.id %}">{{ person.from_user.count }}</a>  Following : <a href="{% url 'accounts:followings' person.id %}">{{ person.to_user.count }}</a></p>
+    </div>
+  </div>
+
+
+    <h3 class="mt-5">Comment Information</h3>
+    <hr>
+    {% for comment in person.comment_set.all %}
+        <p><strong><a href="{% url 'movies:moviedetail' comment.movie.id %}" class="text-dark">{{ comment.movie.title }}</a></strong></p>
+        <p>{{ comment.content }} <i class="fas fa-star" style="color: #ff6b6b;"></i><strong>{{ comment.score }}</strong></p>
+        <hr>
+    {% endfor %}
+    {% if user == person %}
+        <h3 class="mt-5">Movie Recommendation</h3>
+        <hr>
+        <div class='row'>
+        {% for key, value in recommends.items %}
+        <div class='column col-3'>
+            <h5>{{ key }}'s <i class="fas fa-star" style="color: #ff6b6b;"></i><sapn class="text-danger font-weight-bold">{{ value.0.score}}</sapn> movies</h5>
+            <div id="{{key}}carouselExampleControls" class="carousel slide" data-ride="carousel" style="background-color: black;">
+              <div class="carousel-inner">
+                {% for v in value %}
+                {% if forloop.first %}
+                <div class="carousel-item active">
+                    <a href="{% url 'movies:moviedetail' v.movie.id %}"><img src="{{ v.movie.image }}" class="d-block w-100" alt="..."></a>
+                  <div class='row col-12 d-flex align-items-center py-2'><p class="text-white col-7 text-truncate mb-0">{{ v.movie.title }}</p> <p class="text-white col-5 text-success font-weight-bold mb-0"> <img src="https://www.themoviedb.org/assets/2/v4/logos/primary-green-d70eebe18a5eb5b166d5c1ef0796715b8d1a2cbc698f96d311d62f894ae87085.svg" style="height: 20px"> {{ v.movie.tmdbrating }}</p></div>
+                  
+                </div>
+                {% else %}
+                <div class="carousel-item">
+                  <a href="{% url 'movies:moviedetail' v.movie.id %}"><img src="{{ v.movie.image }}" class="d-block w-100" alt="..."></a>
+                  <div class='row col-12 d-flex align-items-center py-2'><p class="text-white col-7 text-truncate mb-0">{{ v.movie.title }}</p> <p class="text-white col-5 text-success font-weight-bold mb-0"> <img src="https://www.themoviedb.org/assets/2/v4/logos/primary-green-d70eebe18a5eb5b166d5c1ef0796715b8d1a2cbc698f96d311d62f894ae87085.svg" style="height: 20px"> {{ v.movie.tmdbrating }}</p></div>
+                </div>
+                {% endif %}
+                {% endfor %}
+              </div>
+              <a class="carousel-control-prev" href="#{{key}}" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="carousel-control-next" href="#{{key}}carouselExampleControls" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+              </a>
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+        <hr>
+    {% endif %}
+    <h3 class="mt-5">장바구니</h3>
+    <div id="jcarouselExampleControls" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+          <div class="carousel-item active">
+              {% for jang in jangba %}
+                  <a href="{% url 'movies:moviedetail' jang.id %}"><img src="{{jang.image}}" class="" style="height: 200px" alt="..."></a>
+              {% endfor %}
+          </div>
+              {% for jang in jangba2 %}
+                  <div class="carousel-item">
+                  {% for j in jang %}
+                      <a href="{% url 'movies:moviedetail' j.id %}"><img src="{{j.image}}" class="" style="height: 200px" alt="..."></a>
+                    {% endfor %}
+                    </div>
+                {% endfor %}
+    
+      </div>
+      <a class="carousel-control-prev" href="#jcarouselExampleControls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#jcarouselExampleControls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+
+<!--    {% for movie in person.movies.all %}-->
+<!--        <a href="{% url 'movies:moviedetail' movie.id %}"><img src="{{ movie.image }}" style="height: 200px"></img></a>-->
+<!--    {% endfor %}-->
+    
+</div>
+{% endblock %}
